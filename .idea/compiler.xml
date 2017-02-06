@@ -26,7 +26,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="chip-8-by-gawdski" target="1.5" />
+      <module name="chip-8-by-gawdski" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
