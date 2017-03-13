@@ -1,21 +1,122 @@
 package com.gawdski.chip8bygawdski;
 
 
+import javafx.animation.AnimationTimer;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
+import javafx.application.Application;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
+import javafx.util.Duration;
 
-public class Screen {
-    public static final int SC_WIDTH = 64;
-    public static final int SC_HEIGHT = 32;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Screen extends Application {
+    private static final double SC_WIDTH = 64;
+    private static final double SC_HEIGHT = 32;
+    private static final int SCALE = 5;
 
     private Color foregroundColor;
     private Color backgroundColor;
 
+    private List<Point> pointsToDraw;
+
     public Screen() {
         this.foregroundColor = Color.WHITE;
         this.backgroundColor = Color.BLACK;
+        pointsToDraw = new ArrayList<>();
     }
 
-    public void drawOnePixel(int x, int y) {
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        primaryStage.setTitle("chip-8 emulator");
+        Group root = new Group();
+        DoubleProperty x = new SimpleDoubleProperty();
+        DoubleProperty y = new SimpleDoubleProperty();
+        Timeline timeline = new Timeline(
+                new KeyFrame(Duration.seconds(0),
+                        new KeyValue(x, 0),
+                        new KeyValue(y, 0)
+                ),
+                new KeyFrame(Duration.seconds(3),
+                        new KeyValue(x, 200),
+                        new KeyValue(y, 200)
+                )
+        );
+        timeline.setAutoReverse(true);
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        Canvas canvas = new Canvas(SC_WIDTH * SCALE, SC_HEIGHT * SCALE);
+        AnimationTimer timer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                GraphicsContext gc = canvas.getGraphicsContext2D();
+                draw(gc);
+            }
+        };
+        root.getChildren().add(canvas);
+        primaryStage.setScene(new Scene(root, backgroundColor));
+        primaryStage.show();
+        timer.start();
+        timeline.play();
+    }
+
+    public void drawOnePixel(double x, double y) {
+        Point point = new Point(x, y, SCALE, SCALE);
+        pointsToDraw.add(point);
+    }
+
+    public void drawSprite(double x, double y, double width, double height) {
+        Point point = new Point(x, y, width, height);
+        pointsToDraw.add(point);
+    }
+
+    public void clearDisplay() {
+        pointsToDraw = new ArrayList<>();
+    }
+
+    private void draw(GraphicsContext graphicsContext) {
+        graphicsContext.setFill(foregroundColor);
+        for (Point p: pointsToDraw) {
+            graphicsContext.fillRect(p.getX(), p.getY(), p.getWidth(), p.getHeight());
+        }
+    }
+
+    private class Point {
+        private double x;
+        private double y;
+        private double width;
+        private double height;
+
+        Point(double x, double y, double width, double height) {
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+        }
+
+        double getX() {
+            return x;
+        }
+
+        double getY() {
+            return y;
+        }
+
+        double getHeight() {
+            return height;
+        }
+
+        double getWidth() {
+            return width;
+        }
 
     }
 
