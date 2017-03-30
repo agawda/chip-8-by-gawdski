@@ -12,6 +12,8 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -19,7 +21,7 @@ import javafx.util.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Screen extends Application {
+public class Screen{
     private static final double SC_WIDTH = 64;
     private static final double SC_HEIGHT = 32;
     private static final int SCALE = 5;
@@ -29,14 +31,14 @@ public class Screen extends Application {
 
     private List<Point> pointsToDraw;
 
-    public Screen() {
+    private Keyboard keyboard;
+
+    public Screen(Keyboard keyboard) {
+        this.keyboard = keyboard;
+        Stage primaryStage = new Stage();
         this.foregroundColor = Color.WHITE;
         this.backgroundColor = Color.BLACK;
         pointsToDraw = new ArrayList<>();
-    }
-
-    @Override
-    public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("chip-8 emulator");
         Group root = new Group();
         DoubleProperty x = new SimpleDoubleProperty();
@@ -62,19 +64,23 @@ public class Screen extends Application {
             }
         };
         root.getChildren().add(canvas);
-        primaryStage.setScene(new Scene(root, backgroundColor));
+        Scene scene = new Scene(root, backgroundColor);
+        scene.addEventHandler(KeyEvent.KEY_PRESSED, (key) -> keyboard.handlePressed(key.getCode()));
+        scene.addEventHandler(KeyEvent.KEY_RELEASED, (key) -> keyboard.handleReleased(key.getCode()));
+        primaryStage.setScene(scene);
         primaryStage.show();
         timer.start();
         timeline.play();
     }
 
+
     public void drawOnePixel(double x, double y) {
-        Point point = new Point(x, y, SCALE, SCALE);
+        Point point = new Point(x * SCALE, y * SCALE, SCALE, SCALE);
         pointsToDraw.add(point);
     }
 
-    public void drawSprite(double x, double y, double width, double height) {
-        Point point = new Point(x, y, width, height);
+    public void drawSprite(double x, double y, double w, double h) {
+        Point point = new Point(x* SCALE, y * SCALE, w * SCALE, h * SCALE);
         pointsToDraw.add(point);
     }
 
@@ -85,7 +91,7 @@ public class Screen extends Application {
     private void draw(GraphicsContext graphicsContext) {
         graphicsContext.setFill(foregroundColor);
         for (Point p: pointsToDraw) {
-            graphicsContext.fillRect(p.getX(), p.getY(), p.getWidth(), p.getHeight());
+            graphicsContext.fillRect(p.getX() * SCALE, p.getY() * SCALE, p.getWidth() * SCALE, p.getHeight() * SCALE);
         }
     }
 
