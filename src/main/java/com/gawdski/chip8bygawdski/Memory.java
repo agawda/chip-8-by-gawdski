@@ -12,6 +12,15 @@ public class Memory {
     private short[] memory;
     private int size;
 
+    public Memory() {
+        memory = new short[MAX_SIZE];
+    }
+
+    public Memory(int size) {
+        this.size = size;
+        memory = new short[size];
+    }
+
     public short read(int index) {
         if(index > size || index < 0) {
             throw new IllegalArgumentException("Index out of bounds.");

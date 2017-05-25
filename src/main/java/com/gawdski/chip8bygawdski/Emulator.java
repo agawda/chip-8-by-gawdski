@@ -9,8 +9,9 @@ public class Emulator extends Application {
     public void start(Stage primaryStage) throws Exception {
         Keyboard keyboard = new Keyboard();
         screen = new Screen(keyboard);
+        screen.run();
         screen.drawOnePixel(0, 0);
         screen.drawOnePixel(2, 2);
-        screen.clearDisplay();
+//        screen.clearDisplay();
     }
 }

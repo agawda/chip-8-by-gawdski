@@ -4,8 +4,10 @@ import java.util.Random;
 
 public class CPU {
     //chip-8 programs don't access memory below this point
-    private final int PC_START = 0x200;
-    private final int REGISTERS_NUM = 16;
+    public static final int PC_START = 0x200;
+    public static final int REGISTERS_NUM = 16;
+    public static final long DEFAULT_CPU_CYCLE_TIME = 2;
+    public static final short DEFAULT_STACK_SIZE = 16;
 
     private int pc; //program counter
     private int I; //index register
@@ -26,8 +28,18 @@ public class CPU {
 
     private Random random;
 
-    public CPU() {
+    public CPU(Screen screen) {
+        this.screen = screen;
+
         random = new Random();
+        memory = new Memory();
+
+        stack = new short[DEFAULT_STACK_SIZE];
+
+        V = new short[REGISTERS_NUM];
+
+        pc = PC_START;
+
     }
 
 
@@ -99,11 +111,15 @@ public class CPU {
     }
 
     class CALLAddr implements OpCode {
-        //TODO:
         @Override
         public void processOpCode() {
             //2nnn
             //call subroutine at nnn
+            String command = convertToHexString(opc);
+            int nnn = convertToInt(command.substring(1));
+
+            stack[sp++] = (short) pc;
+            pc = nnn;
         }
     }
 
@@ -136,11 +152,13 @@ public class CPU {
     }
 
     class JPV0Addr implements OpCode {
-        //TODO:
         @Override
         public void processOpCode() {
             //Bnnn
             //jump to location nnn + V0
+            String command = convertToHexString(opc);
+            int nnn = convertToInt(command.substring(1));
+            pc = nnn + V[0];
         }
     }
 

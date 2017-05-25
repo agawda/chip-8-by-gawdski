@@ -35,10 +35,13 @@ public class Screen{
 
     public Screen(Keyboard keyboard) {
         this.keyboard = keyboard;
-        Stage primaryStage = new Stage();
         this.foregroundColor = Color.WHITE;
         this.backgroundColor = Color.BLACK;
         pointsToDraw = new ArrayList<>();
+    }
+
+    public void run() {
+        Stage primaryStage = new Stage();
         primaryStage.setTitle("chip-8 emulator");
         Group root = new Group();
         DoubleProperty x = new SimpleDoubleProperty();
