@@ -1,13 +1,16 @@
 package com.gawdski.chip8bygawdski;
 
+import com.gawdski.chip8bygawdski.graphics.Screen;
+
+import java.util.Map;
 import java.util.Random;
 
 public class CPU {
     //chip-8 programs don't access memory below this point
-    public static final int PC_START = 0x200;
-    public static final int REGISTERS_NUM = 16;
-    public static final long DEFAULT_CPU_CYCLE_TIME = 2;
-    public static final short DEFAULT_STACK_SIZE = 16;
+    private static final int PC_START = 0x200;
+    private static final int REGISTERS_NUM = 16;
+    private static final long DEFAULT_CPU_CYCLE_TIME = 2;
+    private static final short DEFAULT_STACK_SIZE = 16;
 
     private int pc; //program counter
     private int I; //index register
@@ -22,14 +25,15 @@ public class CPU {
     private Memory memory;
     private Screen screen;
 
-    private OpCode[] opCodes;
+    private final Map<OpCode, Operation> operations;
     private short[] V; //CPU registers
     private short[] stack;
 
     private Random random;
 
-    public CPU(Screen screen) {
+    public CPU(Screen screen, Map<OpCode, Operation> operations) {
         this.screen = screen;
+        this.operations = operations;
 
         random = new Random();
         memory = new Memory();
@@ -39,23 +43,11 @@ public class CPU {
         V = new short[REGISTERS_NUM];
 
         pc = PC_START;
-
     }
 
 
-    private interface OpCode {
-        default String convertToHexString(int n) {
-            return Integer.toHexString(n);
-        }
 
-        default int convertToInt(String n) {
-            return Integer.valueOf(n, 16);
-        }
-
-        void processOpCode();
-    }
-
-    private class ADDIVx implements OpCode {
+    private class ADDIVx implements Operation {
         @Override
         public void processOpCode() {
             //Fx1E
@@ -66,7 +58,7 @@ public class CPU {
         }
     }
 
-    class ADDVx implements OpCode {
+    class ADDVx implements Operation {
         @Override
         public void processOpCode() {
             //7xkk
@@ -78,7 +70,7 @@ public class CPU {
         }
     }
 
-    class ADDVxVy implements OpCode {
+    class ADDVxVy implements Operation {
         @Override
         public void processOpCode() {
             //8xy4
@@ -97,7 +89,7 @@ public class CPU {
         }
     }
 
-    class ANDVxVy implements OpCode {
+    class ANDVxVy implements Operation {
         @Override
         public void processOpCode() {
             //8xy2
@@ -110,7 +102,7 @@ public class CPU {
         }
     }
 
-    class CALLAddr implements OpCode {
+    class CALLAddr implements Operation {
         @Override
         public void processOpCode() {
             //2nnn
@@ -123,7 +115,7 @@ public class CPU {
         }
     }
 
-    class CLS implements OpCode {
+    class CLS implements Operation {
         @Override
         public void processOpCode() {
             //clear display
@@ -131,7 +123,7 @@ public class CPU {
         }
     }
 
-    class DRWVxVy implements OpCode {
+    class DRWVxVy implements Operation {
         //TODO:
         @Override
         public void processOpCode() {
@@ -140,7 +132,7 @@ public class CPU {
         }
     }
 
-    class JPAddr implements OpCode {
+    class JPAddr implements Operation {
         @Override
         public void processOpCode() {
             //1nnn
@@ -151,7 +143,7 @@ public class CPU {
         }
     }
 
-    class JPV0Addr implements OpCode {
+    class JPV0Addr implements Operation {
         @Override
         public void processOpCode() {
             //Bnnn
@@ -162,7 +154,7 @@ public class CPU {
         }
     }
 
-    class LDBVx implements OpCode {
+    class LDBVx implements Operation {
         //TODO:
         @Override
         public void processOpCode() {
@@ -171,7 +163,7 @@ public class CPU {
         }
     }
 
-    class LDDTVx implements OpCode {
+    class LDDTVx implements Operation {
         @Override
         public void processOpCode() {
             //Fx15
@@ -182,7 +174,7 @@ public class CPU {
         }
     }
 
-    class LDFVx implements OpCode {
+    class LDFVx implements Operation {
         //TODO:
         @Override
         public void processOpCode() {
@@ -191,7 +183,7 @@ public class CPU {
         }
     }
 
-    class LDIAddr implements OpCode {
+    class LDIAddr implements Operation {
         @Override
         public void processOpCode() {
             //Annn
@@ -202,7 +194,7 @@ public class CPU {
         }
     }
 
-    class LDIVx implements OpCode {
+    class LDIVx implements Operation {
         //TODO:
         @Override
         public void processOpCode() {
@@ -211,7 +203,7 @@ public class CPU {
         }
     }
 
-    class LDSTVx implements OpCode {
+    class LDSTVx implements Operation {
         @Override
         public void processOpCode() {
             //Fx18
@@ -222,7 +214,7 @@ public class CPU {
         }
     }
 
-    class LDVx implements OpCode {
+    class LDVx implements Operation {
         @Override
         public void processOpCode() {
             //6xkk
@@ -234,7 +226,7 @@ public class CPU {
         }
     }
 
-    class LDVxDT implements OpCode {
+    class LDVxDT implements Operation {
         @Override
         public void processOpCode() {
             //Fx07
@@ -245,7 +237,7 @@ public class CPU {
         }
     }
 
-    class LDVxI implements OpCode {
+    class LDVxI implements Operation {
         //TODO:
         @Override
         public void processOpCode() {
@@ -254,7 +246,7 @@ public class CPU {
         }
     }
 
-    class LDVxK implements OpCode {
+    class LDVxK implements Operation {
         //TODO:
         @Override
         public void processOpCode() {
@@ -263,7 +255,7 @@ public class CPU {
         }
     }
 
-    class LDVxVy implements OpCode {
+    class LDVxVy implements Operation {
         @Override
         public void processOpCode() {
             //8xy0
@@ -275,7 +267,7 @@ public class CPU {
         }
     }
 
-    class ORVxVy implements OpCode {
+    class ORVxVy implements Operation {
         @Override
         public void processOpCode() {
             //8xy1
@@ -288,7 +280,7 @@ public class CPU {
         }
     }
 
-    class RET implements OpCode {
+    class RET implements Operation {
         //TODO:
         @Override
         public void processOpCode() {
@@ -297,7 +289,7 @@ public class CPU {
         }
     }
 
-    class RNDVx implements OpCode {
+    class RNDVx implements Operation {
         @Override
         public void processOpCode() {
             //Cxkk
@@ -310,7 +302,7 @@ public class CPU {
         }
     }
 
-    class SEVx implements OpCode {
+    class SEVx implements Operation {
         @Override
         public void processOpCode() {
             //3xkk
@@ -325,7 +317,7 @@ public class CPU {
         }
     }
 
-    class SEVxVy implements OpCode {
+    class SEVxVy implements Operation {
         @Override
         public void processOpCode() {
             //5xy0
@@ -340,7 +332,7 @@ public class CPU {
         }
     }
 
-    class SHLVx implements OpCode {
+    class SHLVx implements Operation {
         //TODO:
         @Override
         public void processOpCode() {
@@ -349,7 +341,7 @@ public class CPU {
         }
     }
 
-    class SHRVx implements OpCode {
+    class SHRVx implements Operation {
         @Override
         public void processOpCode() {
             //8xy6
@@ -361,7 +353,7 @@ public class CPU {
         }
     }
 
-    class SKNPVx implements OpCode {
+    class SKNPVx implements Operation {
         //TODO:
         @Override
         public void processOpCode() {
@@ -370,7 +362,7 @@ public class CPU {
         }
     }
 
-    class SKPVx implements OpCode {
+    class SKPVx implements Operation {
         //TODO:
         @Override
         public void processOpCode() {
@@ -382,7 +374,7 @@ public class CPU {
         }
     }
 
-    class SNEVx implements OpCode {
+    class SNEVx implements Operation {
         @Override
         public void processOpCode() {
             //4xkk
@@ -397,7 +389,7 @@ public class CPU {
         }
     }
 
-    class SNEVxVy implements OpCode {
+    class SNEVxVy implements Operation {
         @Override
         public void processOpCode() {
             //9xy0
@@ -411,7 +403,7 @@ public class CPU {
         }
     }
 
-    class SUBNVxVy implements OpCode {
+    class SUBNVxVy implements Operation {
         @Override
         public void processOpCode() {
             //8xy7
@@ -430,7 +422,7 @@ public class CPU {
         }
     }
 
-    class SUBVxVy implements OpCode {
+    class SUBVxVy implements Operation {
         @Override
         public void processOpCode() {
             //8xy5
@@ -448,7 +440,7 @@ public class CPU {
         }
     }
 
-    class XORVxVy implements OpCode {
+    class XORVxVy implements Operation {
         @Override
         public void processOpCode() {
             //8xy3
