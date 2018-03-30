@@ -27,7 +27,7 @@ public class Memory {
     }
 
     public short read(int index) {
-        if (index > size || index < 0) {
+        if (index > MAX_SIZE || index < 0) {
             LOG.error(ERROR_MESSAGE, index);
             throw new IllegalArgumentException();
         }
@@ -36,7 +36,7 @@ public class Memory {
     }
 
     public short readOneByte(int index) {
-        if (index > size || index < 0) {
+        if (index > MAX_SIZE || index < 0) {
             LOG.error(ERROR_MESSAGE, index);
             throw new IllegalArgumentException();
         }
@@ -45,7 +45,7 @@ public class Memory {
     }
 
     public void write(int index, int value) {
-        if (index > size || index < 0) {
+        if (index > MAX_SIZE || index < 0) {
             LOG.error(ERROR_MESSAGE, index);
             throw new IllegalArgumentException();
         }

@@ -16,13 +16,22 @@ import java.io.IOException;
  */
 public class GameLoader {
     private static final Logger LOG = LoggerFactory.getLogger(GameLoader.class);
+    private static final int MAX_SIZE = 0x1000; //4096
+    private static final String ERROR_MESSAGE = "Index out of bounds at index: {}";
+
+    private int size;
+
+    private static byte[] storage;
 
     public static GameData loadGame(File gameFile) throws GameNotLoadedException {
         try {
+            storage = IOUtils.toByteArray(new FileInputStream(gameFile));
             return new GameData(IOUtils.toByteArray(new FileInputStream(gameFile)));
         } catch (IOException e) {
             LOG.error("Exception during program loading: {}", e.getMessage());
-            throw new GameNotLoadedException("Error occured during game loading");
+            throw new GameNotLoadedException("Error occurred during game loading");
         }
     }
+
+
 }

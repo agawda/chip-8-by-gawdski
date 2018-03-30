@@ -5,11 +5,11 @@ package com.gawdski.chip8bygawdski;
  * 10.02.2018
  */
 public interface Operation {
-    default String convertToHexString(int n) {
+    static String convertToHexString(int n) {
         return Integer.toHexString(n);
     }
 
-    default int convertToInt(String n) {
+    static int convertToInt(String n) {
         return Integer.valueOf(n, 16);
     }
 

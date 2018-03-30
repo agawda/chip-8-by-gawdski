@@ -68,15 +68,21 @@ public class Screen {
             }
         };
         root.getChildren().add(canvas);
+
         Scene scene = new Scene(root, backgroundColor);
-        scene.addEventHandler(KeyEvent.KEY_PRESSED, key -> keyboard.handlePressed(key.getCode()));
-        scene.addEventHandler(KeyEvent.KEY_RELEASED, key -> keyboard.handleReleased(key.getCode()));
+
+        createKeybindings(scene);
+
         primaryStage.setScene(scene);
         primaryStage.show();
         timer.start();
         timeline.play();
     }
 
+    private void createKeybindings(Scene scene) {
+        scene.addEventHandler(KeyEvent.KEY_PRESSED, key -> keyboard.handlePressed(key.getCode()));
+        scene.addEventHandler(KeyEvent.KEY_RELEASED, key -> keyboard.handleReleased(key.getCode()));
+    }
 
     public void drawOnePixel(double x, double y) {
         Point point = new Point(x * scale, y * scale, scale, scale);
